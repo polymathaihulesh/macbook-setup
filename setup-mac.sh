@@ -21,8 +21,8 @@ fi
 
 echo "==> Step 3/8: CLI tools"
 brew install \
-  bat eza fzf ripgrep htop zoxide tmux tmate neovim wget watchman \
-  mysql openjdk@21 python@3.12 bun gh
+  bat eza fzf ripgrep htop zoxide tmux wget watchman \
+  openjdk@21 python@3.12 bun
 
 # Java: make openjdk@21 visible to the system
 sudo ln -sfn "$(brew --prefix openjdk@21)/libexec/openjdk.jdk" \
@@ -30,11 +30,8 @@ sudo ln -sfn "$(brew --prefix openjdk@21)/libexec/openjdk.jdk" \
 
 echo "==> Step 4/8: Desktop apps"
 brew install --cask \
-  kitty visual-studio-code google-chrome brave-browser firefox \
-  postman slack vlc docker mysqlworkbench burp-suite \
-  android-studio google-cloud-sdk
-# Antigravity IDE (skip silently if the cask isn't available yet)
-brew install --cask antigravity 2>/dev/null || echo "  (antigravity cask not found — install from antigravity.google manually)"
+  kitty visual-studio-code google-chrome \
+  postman slack vlc docker mysqlworkbench burp-suite
 
 echo "==> Step 5/8: Fonts for Powerlevel10k"
 brew install --cask font-meslo-lg-nerd-font
@@ -68,25 +65,13 @@ export NVM_DIR="$HOME/.nvm"
 nvm install 24
 nvm alias default 24
 
-npm install -g \
-  @anthropic-ai/claude-code @google/gemini-cli @openai/codex \
-  @playwright/cli agent-browser openclaw
+npm install -g @anthropic-ai/claude-code @playwright/cli
 
 mkdir -p "$HOME/dev"/{freelance,job-prep,learning,personal,sandbox,tools,work}
-
-# VS Code extensions
-if command -v code >/dev/null 2>&1 && [ -f "$KIT_DIR/vscode-extensions.txt" ]; then
-  echo "==> Installing VS Code extensions (85 of them — takes a while)"
-  while read -r ext; do
-    code --install-extension "$ext" --force || true
-  done < "$KIT_DIR/vscode-extensions.txt"
-fi
 
 echo ""
 echo "✅ Done! Now do these by hand:"
 echo "  1. Open a NEW terminal — Powerlevel10k prompt should appear (run 'p10k configure' if fonts look broken)"
 echo "  2. Open Docker.app once to finish Docker Desktop setup"
-echo "  3. Open Android Studio once — it downloads the Android SDK + emulator (replaces Waydroid)"
-echo "  4. gcloud init   (log in to Google Cloud again)"
-echo "  5. claude login / gemini / codex — log in to your AI CLIs again"
-echo "  6. brew services start mysql   (then import your DB dump if you have one)"
+echo "  3. Open VS Code, log in and enable Settings Sync — extensions + settings come automatically"
+echo "  4. claude — log in to Claude Code again"

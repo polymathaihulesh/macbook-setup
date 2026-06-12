@@ -12,7 +12,7 @@ This folder contains everything needed to recreate your Ubuntu coding setup on t
 | `gitconfig` | Your git name/email |
 | `tmux.conf` | Your tmux config |
 | `kitty.conf` | Your kitty terminal config |
-| `vscode-extensions.txt` | All 85 VS Code extensions |
+| `vscode-extensions.txt` | Extension list — backup only; Settings Sync restores them after you log into VS Code |
 
 ## How to use it
 
@@ -32,26 +32,22 @@ This folder contains everything needed to recreate your Ubuntu coding setup on t
 | On Ubuntu | On Mac |
 |---|---|
 | `apt` / `snap` | Homebrew (`brew install`, `brew install --cask` for apps) |
-| Waydroid (your `android` aliases) | Android Studio emulator (much better on Apple Silicon) |
 | `docker.io` package | Docker Desktop app |
 | `xclip` | built-in `pbcopy` / `pbpaste` |
-| Chromium snap | not installed — Chrome/Brave/Firefox cover it |
 | NVIDIA drivers, ibus, GNOME themes | not needed on macOS |
 | iriun webcam | install from https://iriun.com (Mac version exists) |
 
-Your `android*` aliases in `.zshrc` still point to Waydroid and won't work on Mac —
-after Android Studio is set up, launch the emulator with `emulator -avd <name>`
-or just from Android Studio's Device Manager.
+Your `android*` aliases in `.zshrc` point to Waydroid, which doesn't exist on Mac —
+they'll just error if you use them. If you need an Android emulator later,
+install Android Studio: `brew install --cask android-studio`.
 
 ## Don't forget your data
 
 These are NOT in this kit — copy them separately:
 
 - **`~/dev` projects** — push everything to GitHub, or copy via USB/scp
-- **MySQL databases** — on Ubuntu: `mysqldump -u root -p --all-databases > backup.sql`,
-  on Mac: `mysql -u root < backup.sql`
 - **SSH keys** (`~/.ssh`) — copy the folder, then `chmod 600 ~/.ssh/id_*`
-- **`~/.claude`** memory/settings, `~/.config/gcloud` logins (or just log in fresh)
+- **`~/.claude`** memory/settings (or just log in fresh)
 - **WireGuard config** — re-add your tunnel in the WireGuard Mac app (App Store)
 
 ## Mac tips for an Ubuntu person
