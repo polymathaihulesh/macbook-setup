@@ -31,7 +31,7 @@ sudo ln -sfn "$(brew --prefix openjdk@21)/libexec/openjdk.jdk" \
 echo "==> Step 4/8: Desktop apps"
 brew install --cask \
   kitty visual-studio-code google-chrome \
-  slack iina docker mysqlworkbench
+  slack iina docker
 
 echo "==> Step 5/8: Fonts for Powerlevel10k"
 brew install --cask font-meslo-lg-nerd-font
