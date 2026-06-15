@@ -13,6 +13,7 @@ This folder contains everything needed to recreate your Ubuntu coding setup on t
 | `tmux.conf` | Your tmux config |
 | `kitty.conf` | Your kitty terminal config |
 | `vscode-extensions.txt` | Extension list — backup only; Settings Sync restores them after you log into VS Code |
+| `transfer-dev.sh` | Copies `~/dev` (code + `.env` files) from Ubuntu to the Mac over WiFi |
 
 ## How to use it
 
@@ -45,7 +46,9 @@ install Android Studio: `brew install --cask android-studio`.
 
 These are NOT in this kit — copy them separately:
 
-- **`~/dev` projects** — push everything to GitHub, or copy via USB/scp
+- **`~/dev` projects + `.env` secrets** — run `bash transfer-dev.sh hulesh@<mac-ip>` from Ubuntu.
+  It copies code and gitignored `.env` files (GitHub does NOT have those), skipping
+  node_modules/venvs (Linux binaries — reinstall with `npm install` / `pip install` on the Mac).
 - **SSH keys** (`~/.ssh`) — copy the folder, then `chmod 600 ~/.ssh/id_*`
 - **`~/.claude`** memory/settings (or just log in fresh)
 - **WireGuard config** — re-add your tunnel in the WireGuard Mac app (App Store)
