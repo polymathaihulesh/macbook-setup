@@ -1,0 +1,10 @@
+venv/
+__pycache__/
+*.pyc
+.git/
+db_dumps/
+*.sql
+*.sql.gz
+static/CACHE/
+.env.local
+*.log

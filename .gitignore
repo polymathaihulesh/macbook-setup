@@ -1,0 +1,5 @@
+
+# eVidyaloka DB dump — too big for git (~538 MB); transfer via move-evidyaloka.sh
+evidyaloka/db_dumps/*.sql
+evidyaloka/db_dumps/*.sql.gz
+evidyaloka/config.py

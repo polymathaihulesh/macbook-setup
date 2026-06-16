@@ -1,0 +1,65 @@
+# eVidyaloka local dev stack — Django + MySQL 8.0 + Redis.
+#
+# platform: linux/amd64 makes the whole stack run as x86 (matching the current
+# Ubuntu dev machine) so every dependency installs identically. On Apple Silicon
+# Macs this runs under Docker Desktop's Rosetta emulation — a little slower, but
+# it's the only way to install the Intel-only `daal4py` without code changes.
+#
+# Usage:
+#   docker compose up -d --build          # start everything
+#   docker compose exec web python manage.py migrate
+#   open http://localhost:8000
+#
+# DB import: drop your .sql dump into ./db_dumps/ BEFORE the first `up` and MySQL
+# auto-loads it; or import later (see DOCKER-SETUP.md).
+
+services:
+  db:
+    image: mysql:8.0
+    platform: linux/amd64
+    environment:
+      MYSQL_ROOT_PASSWORD: evadmin123      # matches .env EVD_DB_PWD
+      MYSQL_DATABASE: evd_replica          # active DB (per .env EVD_DB_NAME)
+    ports:
+      - "3306:3306"                        # so MySQL Workbench on the Mac can connect to localhost:3306
+    volumes:
+      - mysql_data:/var/lib/mysql          # persists data across restarts
+      - ./db_dumps:/docker-entrypoint-initdb.d:ro   # *.sql here auto-import on first start
+    command: --mysql-native-password=ON --default-storage-engine=INNODB
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pevadmin123"]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 600s
+
+  redis:
+    image: redis:7
+    platform: linux/amd64
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    platform: linux/amd64
+    # Point the app's DB host at the `db` service, then run the dev server.
+    # (config.py is produced from config_docker.py, which uses HOST='db'.)
+    command: >
+      sh -c "cp -f config_docker.py config.py &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app                             # live code reload
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      EVD_DB_HOST: "db"                    # overrides the .env 127.0.0.1 for the container network
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+volumes:
+  mysql_data:
