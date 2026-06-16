@@ -27,7 +27,7 @@ ok "Docker is running"
 
 # --- 2. DB dump present? --------------------------------------------------
 say "Checking for the database dump"
-if ls db_dumps/*.sql.gz db_dumps/*.sql >/dev/null 2>&1; then
+if ls db_dumps/*.sql.gz db_dumps/*.sql 2>/dev/null | grep -q .; then
   ok "Found a dump in db_dumps/ — MySQL will auto-import it on first start."
   # optional integrity check if a checksum sits beside it
   if [ -f db_dumps/evd_replica.sql.gz.sha256 ]; then
@@ -38,6 +38,18 @@ if ls db_dumps/*.sql.gz db_dumps/*.sql >/dev/null 2>&1; then
 else
   warn "No dump in db_dumps/ — the database will start EMPTY."
   warn "Copy evd_replica.sql.gz into db_dumps/ and re-run to import the data."
+fi
+
+# --- 2b. Make the app's DB host configurable for Docker -------------------
+# evidyaloka/settings.py hardcodes the default DB HOST to '' (a local socket).
+# Rewrite it to read EVD_DB_HOST so the web container reaches the `db` service.
+# Idempotent: skipped if already patched. Only touches the first (default) DB.
+SETTINGS_FILE="evidyaloka/settings.py"
+if [ -f "$SETTINGS_FILE" ] && ! grep -q "EVD_DB_HOST" "$SETTINGS_FILE"; then
+  say "Patching $SETTINGS_FILE so the DB host is configurable (EVD_DB_HOST)"
+  perl -0pi -e "s/\Q        'HOST': '',\E\n/        'HOST': os.environ.get('EVD_DB_HOST', ''),   # '' = local socket; 'db' in Docker\n/" "$SETTINGS_FILE" \
+    && ok "settings.py patched" \
+    || warn "could not patch settings.py automatically — set the default DB HOST to 'db' by hand"
 fi
 
 # --- 3. Build + start -----------------------------------------------------

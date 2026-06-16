@@ -25,8 +25,15 @@ mkdir -p "$PROJECT/db_dumps"
 echo "  done"
 
 echo "==> 2/3 Pulling DB dump (~538 MB) from $LINUX_USER@$LINUX_HOST (resumable)"
-rsync -ah --partial --info=progress2 --skip-compress=gz \
-  "$LINUX_USER@$LINUX_HOST:$DUMP_SRC" "$PROJECT/db_dumps/"
+# Use a modern rsync if one is installed (e.g. Homebrew's), otherwise fall back
+# to flags the stock macOS rsync (2.6.9) understands.
+if rsync --version 2>/dev/null | grep -q 'version 3'; then
+  rsync -ah --partial --info=progress2 --skip-compress=gz \
+    "$LINUX_USER@$LINUX_HOST:$DUMP_SRC" "$PROJECT/db_dumps/"
+else
+  rsync -a --partial --progress \
+    "$LINUX_USER@$LINUX_HOST:$DUMP_SRC" "$PROJECT/db_dumps/"
+fi
 
 echo "==> 3/3 Verifying dump integrity"
 if ( cd "$PROJECT/db_dumps" && shasum -a 256 -c evd_replica.sql.gz.sha256 ); then

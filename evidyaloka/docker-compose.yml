@@ -25,7 +25,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql          # persists data across restarts
       - ./db_dumps:/docker-entrypoint-initdb.d:ro   # *.sql here auto-import on first start
-    command: --mysql-native-password=ON --default-storage-engine=INNODB
+    command: --default-authentication-plugin=mysql_native_password --default-storage-engine=INNODB
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-pevadmin123"]
       interval: 10s

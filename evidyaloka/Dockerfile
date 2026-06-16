@@ -24,6 +24,12 @@ WORKDIR /app
 # Install Python deps first (better layer caching)
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
+# These are imported by the app but missing from requirements.txt (they were
+# only present in the old Ubuntu environment):
+#   python-dotenv  -> evidyaloka/settings.py
+#   SQLAlchemy     -> web/views.py (create_engine)
+#   firebase-admin -> vrm_services/context_processor.py (runs on every request)
+RUN pip install "python-dotenv==0.15.0" "SQLAlchemy>=2.0,<2.1" "firebase-admin>=6.0,<7.0"
 
 # App code is bind-mounted in dev (see docker-compose.yml), so this COPY is for
 # image completeness / non-mounted runs.
